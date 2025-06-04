@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Catálogo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos Generales (Mobile First: aplican a todas las pantallas pequeñas) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: white;
+            color: #222;
+        }
+
+        header {
+            background: linear-gradient(to right, #ff69b4, #ffa500, #f0e68c);
+            padding: 0.5rem 1rem; /* Padding cómodo para móviles */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            height: 80px; /* Altura fija del header para móvil */
+        }
+
+        header img {
+            height: 65px; /* Tamaño del logo en móvil (se ajusta a la altura del header) */
+            max-width: 90%; /* Asegura que no se desborde */
+            object-fit: contain; /* Para que el logo se vea completo y no se corte */
+            object-position: left;
+        }
+
+        .menu-btn {
+            font-size: 2.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 101;
+            color: #222;
+            display: block; /* Visible por defecto en móvil */
+        }
+
+        nav {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: none; /* Oculto por defecto en móvil (se muestra con JS) */
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        nav.open {
+            display: flex; /* Mostrar menú en móvil cuando se activa */
+        }
+
+        nav a {
+            color: #222;
+            text-decoration: none;
+            padding: 0.7rem 1.5rem;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #ff69b4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            margin-top: 1rem; /* Añadido para dar espacio bajo el header */
+        }
+
+        h2 {
+            text-align: left;
+            margin-top: 2rem;
+            margin-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .product-card img {
+            width: 100%;
+            border-radius: 8px;
+            height: 100px; /* Reducida ligeramente la altura fija para mejor encuadre en móvil */
+            object-fit: cover; /* Sigue cubriendo el espacio, recorta si es necesario */
+            margin-bottom: 0.5rem;
+        }
+
+        /* ESTILO ESPECÍFICO PARA IMAGEN DE ROBUX Y SERVICIOS ONLINE (SHEIN, etc.) */
+        .product-card img[alt="RBX"],
+        .product-card img[alt="ALTSERVICE"],
+        .product-card img[alt="Spotify"] { /* Añadimos Spotify también para consistencia */
+            height: 80px; /* Un poco más pequeña, para que se vea el logo completo */
+            object-fit: contain; /* ¡MUY IMPORTANTE! Hace que la imagen se vea completa sin cortar */
+        }
+
+        .product-card p {
+            font-weight: 600;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .product-card button {
+            margin-top: 0.5rem;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #ff69b4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+            text-decoration: none; /* Asegura que el enlace no tenga subrayado */
+            color: #222; /* Color del icono de carrito */
+        }
+
+        .cart-quantity {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ffa500;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 6px;
+            min-width: 20px;
+            text-align: center;
+            display: none; /* Oculto por defecto, se muestra con JS si hay ítems */
+        }
+
+        /* --- Media Queries para Desktop (pantallas más grandes) --- */
+        @media (min-width: 768px) {
+            header {
+                padding: 0.1rem 1rem; /* Más compacto en desktop */
+                height: 120px; /* Altura fija para el header en desktop */
+                justify-content: space-between; /* Mantener la distribución */
+            }
+
+            header img {
+                height: 110px; /* ¡Logo grande para desktop! */
+            }
+
+            .menu-btn {
+                display: none; /* Ocultar el botón de menú en desktop */
+            }
+
+            nav {
+                display: flex; /* Mostrar nav en desktop */
+                position: static; /* Quitar posición absoluta */
+                width: auto;
+                background-color: transparent;
+                backdrop-filter: none;
+                box-shadow: none;
+                flex-direction: row; /* Menú horizontal en desktop */
+                padding: 0;
+            }
+
+            nav a {
+                color: #222; /* Color normal */
+                text-decoration: none;
+                padding: 0.7rem 1rem; /* Ajustar padding para items de menú en desktop */
+                font-weight: 500;
+            }
+
+            nav a:hover {
+                color: #ff69b4; /* Color al pasar el ratón */
+                text-decoration: underline; /* Subrayado al pasar el ratón */
+            }
+
+            .products {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                padding: 1rem 2rem; /* Más padding en desktop */
+            }
+
+            .product-card img {
+                height: 150px; /* Aumentamos altura de imagen para desktop */
+            }
+            .product-card img[alt="RBX"],
+            .product-card img[alt="ALTSERVICE"],
+            .product-card img[alt="Spotify"] {
+                height: 100px; /* Un poco más grande en desktop */
+            }
+        }
+
+        /* --- Media Queries para pantallas MUY grandes (opcional) --- */
+        @media (min-width: 1200px) {
+            header img {
+                height: 130px; /* Logo aún más grande si la pantalla es gigante */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="loguito.png" alt="logo here" />
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu">
+            <a href="index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="order.html">Happy Order</a>
+            <a href="terminos.html">Términos</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>CATÁLOGO</h1>
+
+        <h2>Dulces</h2>
+        <section class="products">
+            <div class="product-card">
+                <img src="Gomitas.png" alt="Gomitas">
+                <p>Gomitas</p>
+                <p>$300</p>
+                <button onclick="addToCart(this)" data-name="Gomitas" data-price="300">+</button>
+            </div>
+            <div class="product-card">
+                <img src="OkalokaCaja.png" alt="OkalokaCaja">
+                <p>Okaloka Caja</p>
+                <p>$3.000</p>
+                <button onclick="addToCart(this)" data-name="Okaloka Caja" data-price="3000">+</button>
+            </div>
+            <div class="product-card">
+                <img src="BomBomBum.png" alt="BomBomBum">
+                <p>Bombombum</p>
+                <p>$700</p>
+                <button onclick="addToCart(this)" data-name="Bombombum" data-price="700">+</button>
+            </div>
+            <div class="product-card">
+                <img src="OkalokaBolsa.png" alt="OkalokaBolsa">
+                <p>Okaloka Bolsa</p>
+                <p>$2.000</p>
+                <button onclick="addToCart(this)" data-name="Okaloka Bolsa" data-price="2000">+</button>
+            </div>
+            <div class="product-card">
+                <img src="Piazza.png" alt="Piazza">
+                <p>Piazza</p>
+                <p>$1.000</p>
+                <button onclick="addToCart(this)" data-name="Piazza" data-price="1000">+</button>
+            </div>
+        </section>
+
+        <h2>Robux</h2>
+        <section class="products">
+            <div class="product-card">
+                <img src="Robux_icon.png" alt="RBX">
+                <p>40 RBX</p>
+                <p>$4.000</p>
+                <button onclick="addToCart(this)" data-name="40 RBX" data-price="4000">+</button>
+            </div>
+            <div class="product-card">
+                <img src="Robux_icon.png" alt="RBX">
+                <p>80 RBX</p>
+                <p>$6.500</p>
+                <button onclick="addToCart(this)" data-name="80 RBX" data-price="6500">+</button>
+            </div>
+            <div class="product-card">
+                <img src="Robux_icon.png" alt="RBX">
+                <p>500 RBX</p>
+                <p>$32.000</p>
+                <button onclick="addToCart(this)" data-name="500 RBX" data-price="32000">+</button>
+            </div>
+            <div class="product-card">
+                <img src="Robux_icon.png" alt="RBX">
+                <p>1000 RBX</p>
+                <p>$62.000</p>
+                <button onclick="addToCart(this)" data-name="1000 RBX" data-price="62000">+</button>
+            </div>
+        </section>
+
+        <h2>Spotify</h2>
+        <section class="products">
+            <div class="product-card">
+                <img src="Spotify.png" alt="Spotify">
+                <p>1 Mes Individual Spotify</p>
+                <p>$18,900</p>
+                <button onclick="addToCart(this)" data-name="1 Mes Individual Spotify" data-price="18900">+</button>
+            </div>
+        </section>
+
+        <h2>Otros Servicios Online (Shein,Apps,Subscripciones,Envios,etc)</h2>
+        <section class="products">
+            <div class="product-card">
+                <img src="Serviciosalt.png" alt="ALTSERVICE">
+                <p>Servicios Online</p>
+                <p>$2,000</p>
+                <button onclick="addToCart(this)" data-name="Servicios Online" data-price="2000">+</button>
+            </div>
+        </section>
+    </main>
+
+    <a href="order.html" class="cart-icon">
+        🛒
+        <span class="cart-quantity">0</span>
+    </a>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('open');
+        }
+
+        // Función para añadir productos al carrito
+        function addToCart(button) {
+            const productName = button.dataset.name;
+            const productPrice = parseFloat(button.dataset.price); // Aseguramos que sea un número
+
+            let cart = JSON.parse(localStorage.getItem('happyCart')) || [];
+
+            // Buscar si el producto ya está en el carrito
+            const existingProductIndex = cart.findIndex(item => item.name === productName);
+
+            if (existingProductIndex !== -1) {
+                // Si el producto ya existe, incrementar la cantidad
+                cart[existingProductIndex].quantity++;
+            } else {
+                // Si el producto no existe, añadirlo al carrito con cantidad 1
+                cart.push({
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('happyCart', JSON.stringify(cart));
+            // Puedes cambiar esto por una notificación más bonita si quieres, o eliminarla
+            // alert(`${productName} añadido al carrito!`); 
+            updateCartIconQuantity(); // Actualizar el número en el carrito
+        }
+
+        // Función para actualizar la cantidad total en el ícono del carrito
+        function updateCartIconQuantity() {
+            let cart = JSON.parse(localStorage.getItem('happyCart')) || [];
+            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartIcon = document.querySelector('.cart-icon');
+            
+            // Si ya existe un span para la cantidad, actualízalo, si no, créalo
+            let quantitySpan = cartIcon.querySelector('.cart-quantity');
+            if (!quantitySpan) {
+                quantitySpan = document.createElement('span');
+                quantitySpan.classList.add('cart-quantity');
+                cartIcon.appendChild(quantitySpan);
+            }
+            
+            if (totalQuantity > 0) {
+                quantitySpan.textContent = totalQuantity;
+                quantitySpan.style.display = 'block'; // Asegúrate de que sea visible
+            } else {
+                quantitySpan.style.display = 'none'; // Oculta si no hay productos
+            }
+        }
+
+        // Llamar a la función al cargar la página para mostrar la cantidad inicial
+        document.addEventListener('DOMContentLoaded', updateCartIconQuantity);
+
+    </script>
+</body>
+</html>
