@@ -1,157 +1,621 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Corner - Order</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-    }
-    header {
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
-      padding: 15px;
-      text-align: center;
-      color: white;
-      font-size: 24px;
-    }
-    .container {
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      margin-top: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .hidden {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Shop - Tu Pedido</title>
+    
+    <link rel="icon" type="image/png" href="/happyfavicon.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles & Mobile First */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            color: #222;
+        }
+
+        body {
+            background: #f0f2f5;
+        }
+
+        /* --- Header (Copied from index.html for consistency) --- */
+        header {
+            background: linear-gradient(to right, #ff69b4, #ffa500, #f0e68c);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            min-height: 80px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header img {
+            height: 65px;
+            max-width: 80%;
+            object-fit: contain;
+            object-position: left;
+        }
+
+        .menu-btn {
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 101;
+            color: #222;
+            display: block;
+        }
+
+        nav {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+
+        nav.open {
+            display: flex;
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ff69b4;
+            transform: scale(1.05);
+        }
+
+        /* --- Main Content Layout --- */
+        main {
+            display: flex;
+            flex-direction: column; /* Stack columns on mobile */
+            gap: 2rem; /* Spacing between sections */
+            padding: 1.5rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0 2rem; /* Adjusted margin */
+            color: #ff69b4;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 5px;
+            background-color: #ffa500;
+            border-radius: 3px;
+        }
+        
+        /* Order Summary / Form Section */
+        .order-container {
+            display: flex;
+            flex-direction: column; /* Stack order details and form on mobile */
+            gap: 2rem;
+        }
+
+        .order-summary, .checkout-form {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            flex: 1; /* Allow sections to grow */
+        }
+
+        .order-summary h2, .checkout-form h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0e68c; /* Subtle divider */
+            padding-bottom: 0.8rem;
+        }
+
+        /* Cart Items List */
+        #cart-items-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        #cart-items-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed #eee; /* Lighter divider */
+            font-size: 0.95rem;
+        }
+
+        #cart-items-list li:last-child {
+            border-bottom: none;
+        }
+
+        .item-details {
+            flex-grow: 1;
+            margin-right: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .item-details .item-name {
+            font-weight: 500;
+            color: #222;
+        }
+        .item-details .item-price {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .item-controls button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 50%; /* Circular buttons */
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .item-controls button:hover {
+            background: #e6569f;
+        }
+
+        .item-controls .quantity {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .item-total {
+            font-weight: 600;
+            color: #ffa500;
+            min-width: 60px; /* Ensure price column aligns */
+            text-align: right;
+        }
+
+        /* Totals */
+        .order-totals {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .order-totals p {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .order-totals .total-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ff69b4; /* Highlight total price */
+        }
+        
+        .empty-cart-message {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .empty-cart-message a {
+            color: #ff69b4;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        /* Checkout Form */
+        .checkout-form form {
+            padding: 0; /* Remove padding from form itself as container has it */
+            border: none; /* Remove border from form itself */
+            background: none; /* Remove background from form itself */
+            box-shadow: none; /* Remove shadow from form itself */
+            margin: 0;
+        }
+
+        .checkout-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        .checkout-form input[type="text"],
+        .checkout-form input[type="email"],
+        .checkout-form textarea,
+        .checkout-form select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background-color: #fcfcfc;
+            transition: border-color 0.3s ease;
+        }
+
+        .checkout-form input[type="text"]:focus,
+        .checkout-form input[type="email"]:focus,
+        .checkout-form textarea:focus,
+        .checkout-form select:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
+        }
+
+        .checkout-form textarea {
+            min-height: 90px;
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        .checkout-form button[type="submit"] {
+            background: #ff69b4;
+            color: white;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .checkout-form button[type="submit"]:hover {
+            background: #e6569f;
+            transform: translateY(-2px);
+        }
+
+        /* Payment Details */
+        .payment-details {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px dashed #e0e0e0; /* Lighter dashed border */
+            border-radius: 8px;
+            background-color: #fdfdfd;
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+        }
+        
+        .payment-details p {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .payment-details a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .payment-details a:hover {
+            text-decoration: underline;
+        }
+
+        .payment-details img {
+            width: 100%;
+            max-width: 180px; /* Smaller QR code */
+            margin: 1rem auto;
+            display: block;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Cart Icon (Copied from index.html) - Hidden on this page */
+        .cart-icon {
+            display: none; /* Hide cart icon on the order page */
+        }
+
+        /* --- Footer (Copied from index.html) --- */
+        footer {
+            background: #222;
+            color: #eee;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #ff69b4;
+        }
+        
+        .footer-links {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer-links a {
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ff69b4;
+        }
+
+        /* --- Media Queries for Desktop --- */
+        @media (min-width: 768px) {
+            header {
+                padding: 0.5rem 2rem;
+                min-height: 100px;
+            }
+            header img {
+                height: 80px;
+            }
+            .menu-btn {
+                display: none;
+            }
+            nav {
+                position: static;
+                display: flex;
+                flex-direction: row;
+                width: auto;
+                background-color: transparent;
+                backdrop-filter: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            nav a {
+                padding: 0.7rem 1.2rem;
+                color: #222;
+            }
+            nav a:hover {
+                color: #ff69b4;
+                text-decoration: underline;
+                transform: none;
+            }
+
+            main {
+                flex-direction: row; /* Two columns on desktop */
+                justify-content: center;
+                align-items: flex-start; /* Align content to top */
+                padding-top: 3rem; /* More space from header */
+                padding-bottom: 3rem;
+            }
+            
+            .order-container {
+                flex-direction: row; /* Side-by-side on desktop */
+                width: 100%; /* Take full width of main container */
+                max-width: 900px; /* Limit width to prevent being too wide */
+            }
+
+            .order-summary, .checkout-form {
+                flex: 1; /* Distribute space evenly */
+                min-width: 400px; /* Ensure minimum width for forms */
+                padding: 2rem; /* More padding on desktop */
+            }
+
+            .order-summary {
+                margin-right: 2rem; /* Space between summary and form */
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>Happy Corner - Realizar Pedido</header>
-  <div class="container">
-    <h2>Formulario de Pedido</h2>
-    <form id="orderForm" method="POST" action="https://formsubmit.co/tu_correo@gmail.com">
-      
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" name="nombre" required>
+    <header>
+        <img src="loguito.png" alt="Happy Shop Logo" />
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="menu">
+            <a href="index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="order.html">Happy Order</a>
+            <a href="puntos.html">Happy Puntos</a>
+            <a href="terminos.html">Términos</a>
+        </nav>
+    </header>
 
-      <label for="correo">Correo electrónico:</label>
-      <input type="email" id="correo" name="correo" required>
+    <main>
+        <h1 class="page-title">Tu Pedido Happy 🥳</h1>
 
-      <label for="producto">Producto:</label>
-      <input type="text" id="producto" name="producto" required>
+        <div class="order-container">
+            <section class="order-summary">
+                <h2>Resumen de tu Carrito</h2>
+                <ul id="cart-items-list"></ul>
+                <div class="empty-cart-message" id="empty-cart-msg" style="display: none;">
+                    Tu carrito está vacío. ¡Empieza a añadir <a href="catalogo.html">productos aquí</a>!
+                </div>
+                <div class="order-totals">
+                    <p>Subtotal: <span id="subtotal-price">$0</span></p>
+                    <p>Envío: <span id="shipping-price">Calculando...</span></p>
+                    <p class="total-price">Total: <span id="total-price">$0</span></p>
+                </div>
+            </section>
 
-      <label for="metodo">Método de Pago:</label>
-      <select id="metodo" name="metodo" required>
-        <option value="">Seleccione...</option>
-        <option value="nequi">Nequi</option>
-        <option value="bancolombia">Bancolombia</option>
-        <option value="tarjeta">Tarjeta</option>
-        <option value="happypuntos">HappyPuntos</option>
-      </select>
+            <section class="checkout-form">
+                <h2>Detalles de Contacto y Pago</h2>
+                <form action="https://formsubmit.co/evanlensenmo@gmail.com" method="POST">
+                    <label for="nombre">Nombre completo:</label>
+                    <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" />
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required placeholder="tucorreo@example.com" />
+                    
+                    <label for="tipo_entrega">Tipo de Entrega:</label>
+                    <select id="tipo_entrega" name="tipo_entrega" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="colegio">Entrega en el Colegio (Productos Físicos)</option>
+                        <option value="virtual">Entrega Virtual (Robux, Spotify, Servicios Online)</option>
+                    </select>
 
-      <!-- Campo especial para HappyPuntos -->
-      <div id="happyPuntosSection" class="hidden">
-        <label for="happyCodigo">HappyCodigo:</label>
-        <input type="text" id="happyCodigo" name="happyCodigo">
+                    <label for="celular">Número de Celular (WhatsApp):</label>
+                    <input type="text" id="celular" name="celular" required placeholder="Ej: 300 123 4567" />
 
-        <button type="button" onclick="verificarHappyCodigo()">Verificar HappyCodigo</button>
-        <p id="mensajeVerificacion" style="font-weight:bold;"></p>
-      </div>
+                    <label for="metodo_pago">Método de pago:</label>
+                    <select id="metodo_pago" name="metodo_pago" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="happy_puntos">Happy Puntos</option>
+                        <option value="nequi">Nequi</option>
+                        <option value="pse">PSE</option>
+                        <option value="applepay">Apple Pay</option>
+                        <option value="tarjeta">Tarjeta (Crédito / Débito)</option>
+                        <option value="efectivo">Efectivo (Pago al recibir)</option>
+                    </select>
 
-      <label for="comentarios">Comentarios (opcional):</label>
-      <textarea id="comentarios" name="comentarios"></textarea>
+                    <!-- --- DIVS DE DETALLES DE PAGO --- -->
+                    <div id="happy_puntos-details" class="payment-details">
+                        <p>Para pagar con Happy Puntos, introduce tu **HappyCódigo**. Tu pedido se confirmará cuando verifiquemos que tienes los puntos suficientes para el total de la compra.</p>
+                        <label for="happy_codigo">Tu HappyCódigo:</label>
+                        <input type="text" id="happy_codigo" name="HappyCódigo" placeholder="Tu HappyCódigo" />
+                        <a href="#" target="_blank" style="margin-top: 10px; display: inline-block;">Enviar PIN por correo</a>
+                    </div>
 
-      <button type="submit">Enviar Pedido</button>
-    </form>
-  </div>
+                    <!-- --- OTROS MÉTODOS DE PAGO (Nequi, PSE, Apple Pay, Tarjeta, Efectivo) --- -->
+                    <!-- ... deja todo igual que en tu HTML actual ... -->
 
-  <script>
-    const metodo = document.getElementById("metodo");
-    const happyPuntosSection = document.getElementById("happyPuntosSection");
-    const mensajeVerificacion = document.getElementById("mensajeVerificacion");
+                    <label for="notas">Notas Adicionales (Opcional):</label>
+                    <textarea id="notas" name="notas_adicionales" rows="2" placeholder="Ej: 'Quiero que me contacten antes de ir al colegio.', 'Es un regalo, no mostrar el precio.'"></textarea>
 
-    // Mostrar campo HappyPuntos solo si eligen ese método
-    metodo.addEventListener("change", () => {
-      if (metodo.value === "happypuntos") {
-        happyPuntosSection.classList.remove("hidden");
-      } else {
-        happyPuntosSection.classList.add("hidden");
-      }
-    });
+                    <input type="hidden" name="_subject" value="Nuevo Pedido Happy Shop!">
+                    <input type="hidden" name="_next" value="happycorner.lol">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="Resumen del Pedido" id="order-summary-input">
+                    <input type="hidden" name="Total del Pedido" id="total-price-hidden">
+                    <input type="hidden" name="Contenido del Carrito" id="cart-content-hidden">
+                    <input type="hidden" name="Número de Nequi" id="nequi-number-hidden">
 
-    // Función de verificación
-    async function verificarHappyCodigo() {
-      const codigo = document.getElementById("happyCodigo").value.trim();
-      if (!codigo) {
-        mensajeVerificacion.textContent = "Por favor ingresa tu HappyCodigo.";
-        mensajeVerificacion.style.color = "red";
-        return;
-      }
+                    <button type="submit" id="place-order-button">
+                        Finalizar HappyOrder
+                    </button>
+                </form>
+            </section>
+        </div>
+    </main>
 
-      try {
-        // Consultar saldo con tu API
-        const res = await fetch(`/api/getPoints?codigo=${codigo}`);
-        const data = await res.json();
+    <footer>
+        <div class="footer-content">
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <div class="footer-links">
+                <a href="terminos.html">Términos y Condiciones</a>
+                <a href="mailto:soporte@happycorner.lol">Contáctanos</a>
+                <a href="catalogo.html">Ver Todo el Catálogo</a>
+            </div>
+        </div>
+    </footer>
 
-        if (data.success) {
-          // Si existe el cliente
-          mensajeVerificacion.textContent = `Código válido. Saldo: ${data.points} HappyPuntos. Se enviará verificación a ${data.email}`;
-          mensajeVerificacion.style.color = "green";
+    <script>
+        // --- TODA TU LOGICA ACTUAL DE CARRITO ---
+        // toggleMenu, renderCart, updateQuantity, updatePaymentDetailsDisplay, etc.
+        // ... copia todo el JS que ya tenías arriba ...
+    </script>
 
-          // Aquí simulamos envío de correo de verificación
-          await fetch("/api/sendVerification", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: data.email, codigo })
-          });
+    <!-- --- Happy Puntos con verificación PIN usando Brevo --- -->
+    <script>
+        const happyCodigoInput = document.getElementById("happy_codigo");
+        const happyLink = document.querySelector("#happy_puntos-details a");
 
-        } else {
-          mensajeVerificacion.textContent = "HappyCodigo inválido.";
-          mensajeVerificacion.style.color = "red";
+        async function sendVerificationEmail() {
+            const codigo = happyCodigoInput.value;
+            const email = document.getElementById("email").value;
+
+            if (!codigo || !email) return alert("Ingresa tu HappyCódigo y correo!");
+
+            try {
+                const res = await fetch("/api/sendVerification", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ codigo, email })
+                });
+                const data = await res.json();
+                if (data.error) alert("Error enviando correo: " + data.error);
+                else {
+                    alert("PIN enviado a tu correo! Revisa tu bandeja.");
+                    verifyPinPrompt(codigo);
+                }
+            } catch (err) {
+                alert("Error enviando correo: " + err.message);
+            }
         }
-      } catch (error) {
-        console.error(error);
-        mensajeVerificacion.textContent = "Error verificando el código.";
-        mensajeVerificacion.style.color = "red";
-      }
-    }
-  </script>
+
+        async function verifyPinPrompt(codigo) {
+            const pin = prompt("Ingresa el PIN que te llegó al correo");
+            if (!pin) return;
+
+            try {
+                const res = await fetch("/api/verifyPin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ codigo, pin })
+                });
+                const data = await res.json();
+                if (data.error) alert("Error: " + data.error);
+                else alert(data.message);
+            } catch (err) {
+                alert("Error verificando PIN: " + err.message);
+            }
+        }
+
+        happyLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            sendVerificationEmail();
+        });
+    </script>
 </body>
 </html>vas
